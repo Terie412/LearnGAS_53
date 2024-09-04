@@ -18,7 +18,8 @@ public class LearnGAS : ModuleRules
 			"EnhancedInput",
 			"GameplayAbilities",
 			"GameplayTasks",
-			"GameplayTags"
+			"GameplayTags",
+			"AIModule",
 		});
 	}
 }

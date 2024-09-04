@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
+#include "Abilities/GameplayAbility.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
-#include "LearnGASCharacter.generated.h"
+#include "MyCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -16,7 +18,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ALearnGASCharacter : public ACharacter
+class AMyCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -44,10 +46,17 @@ class ALearnGASCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
-public:
-	ALearnGASCharacter();
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGive;
 	
+public:
+	AMyCharacter();
+	
+	virtual void OnRep_PlayerState() override;
 
+	virtual void PossessedBy(AController* NewController) override;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 protected:
 
 	/** Called for movement input */

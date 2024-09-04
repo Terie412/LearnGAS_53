@@ -1,6 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "LearnGASCharacter.h"
+#include "MyCharacter.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -10,13 +13,15 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "MyPlayerState.h"
+#include "GameFramework/PlayerState.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
 // ALearnGASCharacter
 
-ALearnGASCharacter::ALearnGASCharacter()
+AMyCharacter::AMyCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -54,7 +59,46 @@ ALearnGASCharacter::ALearnGASCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-void ALearnGASCharacter::BeginPlay()
+void AMyCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	// 客户端初始化 ASC：因为 ASC 是挂载在 PlayerState 上的，所以客户端要初始化 ASC，必须等 PlayerState 同步下来
+	if(UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->InitAbilityActorInfo(GetPlayerState(), this);
+	}
+}
+
+void AMyCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// 服务器初始化 ASC
+	// todo：暂时不知道为什么服务器推荐在这里初始化 ASC
+	if(UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->InitAbilityActorInfo(GetPlayerState(), this);
+
+		for(TSubclassOf<UGameplayAbility> GAClass : AbilitiesToGive)
+		{
+			FGameplayAbilitySpec AbilitySpec = ASC->BuildAbilitySpecFromClass(GAClass);
+			ASC->GiveAbility(AbilitySpec);
+		}
+	}
+}
+
+UAbilitySystemComponent* AMyCharacter::GetAbilitySystemComponent() const
+{
+	if(IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetPlayerState()))
+	{
+		return ASI->GetAbilitySystemComponent();
+	}
+
+	return GetComponentByClass<UAbilitySystemComponent>();
+}
+
+void AMyCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
@@ -72,7 +116,7 @@ void ALearnGASCharacter::BeginPlay()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void ALearnGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
@@ -82,10 +126,10 @@ void ALearnGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ALearnGASCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
 
 		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ALearnGASCharacter::Look);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
 	}
 	else
 	{
@@ -93,7 +137,7 @@ void ALearnGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	}
 }
 
-void ALearnGASCharacter::Move(const FInputActionValue& Value)
+void AMyCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -116,7 +160,7 @@ void ALearnGASCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void ALearnGASCharacter::Look(const FInputActionValue& Value)
+void AMyCharacter::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
