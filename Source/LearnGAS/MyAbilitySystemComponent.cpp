@@ -21,7 +21,6 @@ void UMyAbilitySystemComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 
@@ -33,3 +32,15 @@ void UMyAbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	// ...
 }
 
+void UMyAbilitySystemComponent::InhibitActiveGameplayEffect(FActiveGameplayEffectHandle ActiveGEHandle, bool bInhibit, bool bInvokeGameplayCueEvents)
+{
+	Super::InhibitActiveGameplayEffect(ActiveGEHandle, bInhibit, bInvokeGameplayCueEvents);
+
+	
+	OnActiveGameplayEffectInhibitionChanged.Broadcast(ActiveGEHandle, bInhibit);
+	TObjectPtr<const UGameplayEffect> ActiveGE = GetActiveGameplayEffect(ActiveGEHandle)->Spec.Def;
+
+	FActiveGameplayEffect* ActiveGE2 = const_cast<FActiveGameplayEffect*>(GetActiveGameplayEffect(ActiveGEHandle));
+	
+	// UE_LOG(LogTemp, Display, TEXT("qtc OnActiveGameplayEffectInhibitionChanged: %s, %s"), *ActiveGE->GetName(), bInhibit ? TEXT("true") : TEXT("false"));
+}

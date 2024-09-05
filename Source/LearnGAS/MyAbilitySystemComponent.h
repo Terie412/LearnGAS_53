@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemComponent.h"
-#include "MyAbilitySystemComponent.generated.h"
 
+#include "AbilitySystemComponent.h"
+
+#include "MyAbilitySystemComponent.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class LEARNGAS_API UMyAbilitySystemComponent : public UAbilitySystemComponent
@@ -15,9 +16,12 @@ class LEARNGAS_API UMyAbilitySystemComponent : public UAbilitySystemComponent
 public:
 	UMyAbilitySystemComponent();
 
+	FOnActiveGameplayEffectInhibitionChanged OnActiveGameplayEffectInhibitionChanged;
+
 protected:
 	virtual void BeginPlay() override;
 
-public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	virtual void InhibitActiveGameplayEffect(FActiveGameplayEffectHandle ActiveGEHandle, bool bInhibit, bool bInvokeGameplayCueEvents) override;
 };

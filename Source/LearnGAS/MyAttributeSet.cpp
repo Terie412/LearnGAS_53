@@ -7,17 +7,17 @@
 
 UMyAttributeSet::UMyAttributeSet()
 {
-	InitHealth(100.0f);
+	InitHealth(50.0f);
 	InitMaxHealth(100.0f);
 	InitMana(100.0f);
 	InitMaxMana(100.0f);
+	InitShield(10.0f);
+	InitMaxShield(100.0f);
 }
 
 void UMyAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
-
-	UE_LOG(LogTemp, Display, TEXT("qtc: PreAttrChange: %s, %f"), *Attribute.AttributeName, NewValue);
 }
 
 void UMyAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
@@ -55,5 +55,15 @@ void UMyAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldValue)
 void UMyAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, MaxMana, OldValue);
+}
+
+void UMyAttributeSet::OnRep_Shield(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, Shield, OldValue);
+}
+
+void UMyAttributeSet::OnRep_MaxShield(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, MaxShield, OldValue);
 }
 

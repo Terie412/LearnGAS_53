@@ -35,6 +35,14 @@ public:
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UMyAttributeSet, MaxMana);
 
+	UPROPERTY(ReplicatedUsing=OnRep_Shield)
+	FGameplayAttributeData Shield;
+	ATTRIBUTE_ACCESSORS(UMyAttributeSet, Shield);
+
+	UPROPERTY(ReplicatedUsing=OnRep_MaxShield)
+	FGameplayAttributeData MaxShield;
+	ATTRIBUTE_ACCESSORS(UMyAttributeSet, MaxShield);
+
 	UMyAttributeSet();
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
@@ -54,4 +62,10 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_Shield(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_MaxShield(const FGameplayAttributeData& OldValue);
 };

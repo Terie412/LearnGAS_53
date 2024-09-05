@@ -70,6 +70,14 @@ void AMyCharacter::OnRep_PlayerState()
 	}
 }
 
+void AMyCharacter::OnAnyGameplayTagRemovedOrNewed(FGameplayTag GameplayTag, int Count)
+{
+	if(Count == 0)
+	{
+		
+	}
+}
+
 void AMyCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -85,6 +93,16 @@ void AMyCharacter::PossessedBy(AController* NewController)
 			FGameplayAbilitySpec AbilitySpec = ASC->BuildAbilitySpecFromClass(GAClass);
 			ASC->GiveAbility(AbilitySpec);
 		}
+
+		// 监听一些 GAS 相关的事件，我认为只需要服务器监听即可
+		ASC->OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(this, &AMyCharacter::OnActiveGameplayEffectAddedDelegateToSelf);
+
+		FGameplayTag Enhance_1_Tag;
+		FOnGameplayEffectTagCountChanged Delegate = ASC->RegisterGameplayTagEvent(Enhance_1_Tag, EGameplayTagEventType::NewOrRemoved);
+		Delegate.AddUObject(this, &AMyCharacter::OnAnyGameplayTagRemovedOrNewed);
+
+		// 抛送 ASC 初始化完成的事件到蓝图
+		OnFinishAbilitySystemComponentInitialization();
 	}
 }
 
@@ -96,6 +114,10 @@ UAbilitySystemComponent* AMyCharacter::GetAbilitySystemComponent() const
 	}
 
 	return GetComponentByClass<UAbilitySystemComponent>();
+}
+
+void AMyCharacter::OnFinishAbilitySystemComponentInitialization_Implementation()
+{
 }
 
 void AMyCharacter::BeginPlay()
@@ -111,6 +133,24 @@ void AMyCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+}
+
+void AMyCharacter::OnActiveGameplayEffectAddedDelegateToSelf(UAbilitySystemComponent* TargetASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle GameplayEffectHandle)
+{
+	UE_LOG(LogTemp, Display, TEXT("qtc Add Active Gameplay: %s"), *GameplayEffectSpec.Def->GetName());
+
+	FActiveGameplayEffect* ActiveGE = const_cast<FActiveGameplayEffect*>(TargetASC->GetActiveGameplayEffect(GameplayEffectHandle));
+	if(ActiveGE)
+	{
+		ActiveGE->EventSet.OnInhibitionChanged.AddUObject(this, &AMyCharacter::OnInhibitionChanged);
+	}
+}
+
+void AMyCharacter::OnInhibitionChanged(FActiveGameplayEffectHandle Handle, bool bInhibited)
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	auto ActiveGE = ASC->GetActiveGameplayEffect(Handle)->Spec.Def;
+	UE_LOG(LogTemp, Display, TEXT("qtc OnActiveGameplayEffectInhibitionChanged: %s, %s"), *ActiveGE->GetName(), bInhibited ? TEXT("true") : TEXT("false"));
 }
 
 //////////////////////////////////////////////////////////////////////////
