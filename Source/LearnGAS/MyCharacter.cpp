@@ -133,6 +133,8 @@ void AMyCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	HasAuthority()
 }
 
 void AMyCharacter::OnActiveGameplayEffectAddedDelegateToSelf(UAbilitySystemComponent* TargetASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle GameplayEffectHandle)
