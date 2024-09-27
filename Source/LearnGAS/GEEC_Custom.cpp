@@ -11,19 +11,12 @@ void UGEEC_Custom::Execute_Implementation(const FGameplayEffectCustomExecutionPa
 	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
 
 	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
-	
-	float TotalDamage = 0;
-	for(int Index : Indexes)
-	{
-		TotalDamage += Index;
-	}
-	TotalDamage *= Damage;
 
+	float TotalDamage = Damage;
 	bool bFound = false;
 	float AttributeValue = TargetASC->GetGameplayAttributeValue(TargetAttribute, bFound);
 	if(bFound)
 	{
-		UE_LOG(LogTemp, Display, TEXT("qtc 扣除伤害 %f"), TotalDamage);
 		TargetASC->SetNumericAttributeBase(TargetAttribute, AttributeValue - TotalDamage);
 	}
 }

@@ -7,11 +7,11 @@
 
 UMyAttributeSet::UMyAttributeSet()
 {
-	InitHealth(50.0f);
+	InitHealth(100.0f);
 	InitMaxHealth(100.0f);
 	InitMana(100.0f);
 	InitMaxMana(100.0f);
-	InitShield(10.0f);
+	InitShield(100.0f);
 	InitMaxShield(100.0f);
 }
 

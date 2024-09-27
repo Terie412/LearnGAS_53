@@ -19,15 +19,7 @@ public:
 	float Damage;
 
 	UPROPERTY(EditDefaultsOnly)
-	FGameplayTag SkillTag;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray<int> Indexes;
-
-	UPROPERTY(EditDefaultsOnly)
 	FGameplayAttribute TargetAttribute;
 	
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
-
-	
 };
