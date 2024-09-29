@@ -86,4 +86,19 @@ protected:
 
 	// To add mapping context
 	virtual void BeginPlay();
+
+	struct FPeople
+	{
+		float FValue;
+		int IValue;
+		char CValue;
+	};
+
+	UFUNCTION(BlueprintCallable)
+	void Test()
+	{
+		FPeople P{2.5f, 25,'A'};
+		auto [FValue, IValue, CValue] = P;
+		UE_LOG(LogTemp, Display, TEXT("qtc Test: %f, %d, %d"), FValue, IValue, CValue);
+	}
 };
