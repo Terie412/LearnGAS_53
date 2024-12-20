@@ -10,6 +10,7 @@ void UGEEC_Heal::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
 
 	FGameplayEffectSpec GESpec = ExecutionParams.GetOwningSpec();
+	UE_LOG(LogTemp, Display, TEXT("qtc, UGEEC_Heal::Execute_Implementation DeltaTime = %f, ExecutionTimes = %d, TryExecutionTimes = %d, LastExecutionTime = %f, LastTryExecutionTime = %f"), ExecutionParams.DeltaTime, GESpec.ExecutionTimes, GESpec.TryExecutionTimes, GESpec.LastExecutionTime, GESpec.LastTryExecutionTime);
 	TObjectPtr<const UGameplayEffect> CDO_GE = GESpec.Def;
 
 	UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();

@@ -20,6 +20,7 @@ public class LearnGAS : ModuleRules
 			"GameplayTasks",
 			"GameplayTags",
 			"AIModule",
+			"Slate"
 		});
 	}
 }

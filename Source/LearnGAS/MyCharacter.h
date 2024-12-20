@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "Abilities/GameplayAbility.h"
 #include "GameFramework/Character.h"
@@ -51,6 +52,9 @@ class AMyCharacter : public ACharacter, public IAbilitySystemInterface
 	TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGive;
 
 public:
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FGameplayEffectSpec> GESpecsToApply;
+
 	AMyCharacter();
 
 	virtual void OnRep_PlayerState() override;
@@ -95,10 +99,26 @@ protected:
 	};
 
 	UFUNCTION(BlueprintCallable)
-	void Test()
+	void Test(int32 Index)
 	{
-		FPeople P{2.5f, 25,'A'};
-		auto [FValue, IValue, CValue] = P;
-		UE_LOG(LogTemp, Display, TEXT("qtc Test: %f, %d, %d"), FValue, IValue, CValue);
+		FOnGivenActiveGameplayEffectRemoved OnRemoveDelegate = GetAbilitySystemComponent()->OnAnyGameplayEffectRemovedDelegate();
+		OnRemoveDelegate.AddUObject(this, &AMyCharacter::OnAnyGameplayEffectRemoved);
+	}
+
+	UFUNCTION()
+	void OnAnyGameplayEffectRemoved(const FActiveGameplayEffect& RemovedGameplayEffect)
+	{
+		const FActiveGameplayEffectHandle& RemovedGEHandle = RemovedGameplayEffect.Handle;
+		FActiveGameplayEffectHandle GEHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(GESpecsToApply[0]);
+		
+	}
+
+	void AddMedineReadyToApply(TSubclassOf<UGameplayEffect> GEClass, int Level)
+	{
+		FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
+		FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GEClass, Level, EffectContext);
+
+		int32 Index = GESpecsToApply.Add(*SpecHandle.Data);
+		SpecHandle.Data->SetByCallerNameMagnitudes.Add("MedicineIndex", Index);
 	}
 };

@@ -24,4 +24,10 @@ protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void InhibitActiveGameplayEffect(FActiveGameplayEffectHandle ActiveGEHandle, bool bInhibit, bool bInvokeGameplayCueEvents) override;
+
+	UFUNCTION(BlueprintCallable)
+	void BP_AddLooseGameplayTag(const FGameplayTag& GameplayTag, int Count);
+
+	UFUNCTION(BlueprintCallable)
+	void BP_RemoveLooseGameplayTag(const FGameplayTag& GameplayTag, int Count);
 };

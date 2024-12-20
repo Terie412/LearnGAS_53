@@ -44,3 +44,13 @@ void UMyAbilitySystemComponent::InhibitActiveGameplayEffect(FActiveGameplayEffec
 	
 	// UE_LOG(LogTemp, Display, TEXT("qtc OnActiveGameplayEffectInhibitionChanged: %s, %s"), *ActiveGE->GetName(), bInhibit ? TEXT("true") : TEXT("false"));
 }
+
+void UMyAbilitySystemComponent::BP_AddLooseGameplayTag(const FGameplayTag& GameplayTag, int Count)
+{
+	AddLooseGameplayTag(GameplayTag, Count);
+}
+
+void UMyAbilitySystemComponent::BP_RemoveLooseGameplayTag(const FGameplayTag& GameplayTag, int Count)
+{
+	RemoveLooseGameplayTag(GameplayTag, Count);
+}
